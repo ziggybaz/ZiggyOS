@@ -9,7 +9,7 @@ fn panic(_info: &PanicInfo) -> ! {
     loop {}
 }
 
-pub extern "C" fn _start() -> ! {
+pub extern "C" fn _start() -> ! { //system entry-point, surprised to learn main isn't it in most languages.
     loop {}
 }
 

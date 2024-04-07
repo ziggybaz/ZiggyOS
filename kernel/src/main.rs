@@ -9,7 +9,7 @@ fn panic(_info: &PanicInfo) -> ! {
     loop {}
 }
 
-static OSNAME: &[u88] = b"Ziggy OS Loading";
+static OSNAME: &[u8] = b"Ziggy OS Loading";
 
 #[no_mangle] //don't mangle the name of this function instead use 'C' naming convention
 pub extern "C" fn _start() -> ! { //system entry-point, surprised to learn main isn't it in most languages.(named _start by default, standard)

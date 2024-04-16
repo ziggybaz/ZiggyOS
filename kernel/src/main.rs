@@ -4,7 +4,8 @@
 
 use core::panic::PanicInfo;
 
-#[panic_handler]
+#[panic_handler] //the first error upon disabling standard library is {1.no panic handler. 2.missing langauge item}
+//panic handler solution, implementing our own through a function that never returns
 fn panic(_info: &PanicInfo) -> ! {
     loop {}
 }
@@ -14,7 +15,7 @@ static OSNAME: &[u8] = b"Ziggy OS Loading";
 #[no_mangle] //don't mangle the name of this function instead use 'C' naming convention
 pub extern "C" fn _start() -> ! { //system entry-point, surprised to learn main isn't it in most languages.(named _start by default, standard)
    
-    let vga_buffer = 0xb8000 as *mut u8;
+    let vga_buffer = 0xb8000 as *mut u8; //??memory address??
 
     for (i, &byte) in OSNAME.iter().enumerate() {
         unsafe { //please, this isn't the way we do things in Rust, its only here because rust can't prove the raw pointers created are valid, we use unsafe to calm down the compiler. Don't make a habit of this.

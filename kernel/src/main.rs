@@ -12,7 +12,7 @@ fn panic(_info: &PanicInfo) -> ! {
 
 static OSNAME: &[u8] = b"Ziggy OS Loading";
 
-#[no_mangle] //don't mangle the name of this function instead use 'C' naming convention
+#[no_mangle] //don't mangle the name of this function instead use 'C' calling convention
 pub extern "C" fn _start() -> ! { //system entry-point, surprised to learn main isn't it in most languages.(named _start by default, standard)
    
     let vga_buffer = 0xb8000 as *mut u8; //??memory address??

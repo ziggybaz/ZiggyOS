@@ -2,6 +2,8 @@
 #![no_std] //disabling std lib.
 #![no_main] //overwriting the entry-point
 
+mod vga_buffer;
+
 use core::panic::PanicInfo;
 
 #[panic_handler] //the first error upon disabling standard library is {1.no panic handler. 2.missing langauge item}

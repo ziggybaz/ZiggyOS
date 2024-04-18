@@ -37,7 +37,7 @@ impl ColourCode {
 #[repr(C)] //essential for field ordering as Rust doesn't mind field ordering and we are therefore to use C like rules for this struct which does value field-ordering.
 struct ScreenCharacter {
     ascii_character: u8,
-    colour_code: Colour_Code,
+    colour_code: ColourCode,
 }
 
 const BUFFER_WIDTH: usize = 80;
@@ -55,14 +55,15 @@ pub struct Writer {
     buffer: &'static mut Buffer,
 }
 
+#[allow(unused_variables)]
 //printing(we'll use the Writer to modify the buffer's characters)
 impl Writer {
     pub fn write_byte(&mut self, byte: u8) {
         match byte {
-            b'\n' => self.newline(),
+            b'\n' => self.new_line(),
             byte => {
                 if self.column_position >= BUFFER_WIDTH { self.new_line(); }
-                let row - BUFFER_HEIGHT - 1;
+                let row = BUFFER_HEIGHT - 1;
                 let col = self.column_position;
                 let colour_code = self.colour_code;
                 self.buffer.characters[row][col] = ScreenCharacter {
@@ -83,6 +84,8 @@ impl Writer {
             }
         }
     }
+
+    fn new_line(&mut self) {} // in order to run tests, leave this function signature here, will implement it later otherwise file won't compile
 }
 
 
@@ -90,11 +93,11 @@ impl Writer {
 pub fn print_to_screen() {
     let mut writer = Writer {
         column_position: 0,
-        colour_code: ColourCode::new(Colour::Black, Colour::White),
+        colour_code: ColourCode::new(Colour::Green, Colour::Red),
         buffer: unsafe {&mut *(0xb8000 as *mut Buffer) },
     };
 
-    writer.write_byte("Z");
+    writer.write_byte(b'Z');
     writer.write_string("iggyOS ");
     writer.write_string("is a learning OS for my purposes only,");
     writer.write_string(" maybe there's a trojan horse in here.");

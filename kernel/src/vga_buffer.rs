@@ -78,7 +78,7 @@ impl Writer {
     pub fn write_string(&mut self, s: &str) {
         for byte in s.bytes() {
             match byte {
-                0x20..=0x7e | b'\n' => self.write_byte(byte), //vga text buffer only supports ascii, Rust strings are utf-8 by default so miht contain unsupported bytes, this here differentiates printable & unprintable
+                0x20..=0x7e | b'\n' => self.write_byte(byte), //vga text buffer only supports ascii, Rust strings are utf-8 by default so might contain unsupported bytes, this here differentiates printable & unprintable
                 _ => self.write_byte(0xfe), //for unprinable, we print a character of '0xfe' hex code on the vga hardware
             }
         }
@@ -86,7 +86,7 @@ impl Writer {
 }
 
 
-//let's see if it works
+//let's see if it works, wowza.
 pub fn print_to_screen() {
     let mut writer = Writer {
         column_position: 0,

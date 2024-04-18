@@ -55,9 +55,51 @@ pub struct Writer {
     buffer: &'static mut Buffer,
 }
 
+//printing(we'll use the Writer to modify the buffer's characters)
+impl Writer {
+    pub fn write_byte(&mut self, byte: u8) {
+        match byte {
+            b'\n' => self.newline(),
+            byte => {
+                if self.column_position >= BUFFER_WIDTH { self.new_line(); }
+                let row - BUFFER_HEIGHT - 1;
+                let col = self.column_position;
+                let colour_code = self.colour_code;
+                self.buffer.characters[row][col] = ScreenCharacter {
+                    ascii_character: byte,
+                    colour_code,
+                };
+                self.column_position += 1;
+            }
+        }
+    }
+
+    //converting strings to bytes and printing them out one by one
+    pub fn write_string(&mut self, s: &str) {
+        for byte in s.bytes() {
+            match byte {
+                0x20..=0x7e | b'\n' => self.write_byte(byte), //vga text buffer only supports ascii, Rust strings are utf-8 by default so miht contain unsupported bytes, this here differentiates printable & unprintable
+                _ => self.write_byte(0xfe), //for unprinable, we print a character of '0xfe' hex code on the vga hardware
+            }
+        }
+    }
+}
 
 
+//let's see if it works
+pub fn print_to_screen() {
+    let mut writer = Writer {
+        column_position: 0,
+        colour_code: ColourCode::new(Colour::Black, Colour::White),
+        buffer: unsafe {&mut *(0xb8000 as *mut Buffer) },
+    };
 
+    writer.write_byte("Z");
+    writer.write_string("iggyOS ");
+    writer.write_string("is a learning OS for my purposes only,");
+    writer.write_string(" maybe there's a trojan horse in here.");
+
+}
 
 
 

@@ -32,18 +32,28 @@ impl ColourCode {
     }
 }
 
+//b.text buffer
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+#[repr(C)] //essential for field ordering as Rust doesn't mind field ordering and we are therefore to use C like rules for this struct which does value field-ordering.
+struct ScreenCharacter {
+    ascii_character: u8,
+    colour_code: Colour_Code,
+}
 
+const BUFFER_WIDTH: usize = 80;
+const BUFFER_HEIGHT: usize = 25;
 
+#[repr(transparent)] //ensures same memory layout as its single field
+struct Buffer {
+    characters: [[ScreenCharacter; BUFFER_WIDTH]; BUFFER_HEIGHT],
+}
 
-
-
-
-
-
-
-
-
-
+//writing to screen
+pub struct Writer {
+    column_position: usize,
+    colour_code: ColourCode,
+    buffer: &'static mut Buffer,
+}
 
 
 

@@ -1,4 +1,9 @@
 //vga_text buffer
+use volatile::Volatile; //allows you to manage aggressive Rust compiler optimizations, as we're only writing to buffer and never reading from it, the compiler doesn't know we're using VGA Buffer memory so ight decide that
+                        //these writes are unneccesary and omit them therefore we to avoid this we need to specify these writes as VOLATILE.
+use core::fmt;  //introducing Rust's formatting macros
+use core::fmt::Write;
+
 //a. colour
 #[allow(dead_code)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -45,7 +50,7 @@ const BUFFER_HEIGHT: usize = 25;
 
 #[repr(transparent)] //ensures same memory layout as its single field
 struct Buffer {
-    characters: [[ScreenCharacter; BUFFER_WIDTH]; BUFFER_HEIGHT],
+    characters: [[Volatile<ScreenCharacter>; BUFFER_WIDTH]; BUFFER_HEIGHT],
 }
 
 //writing to screen
@@ -66,10 +71,10 @@ impl Writer {
                 let row = BUFFER_HEIGHT - 1;
                 let col = self.column_position;
                 let colour_code = self.colour_code;
-                self.buffer.characters[row][col] = ScreenCharacter {
+                self.buffer.characters[row][col].write( ScreenCharacter {  //guarantees the compiler will never optimize away this write
                     ascii_character: byte,
                     colour_code,
-                };
+                });
                 self.column_position += 1;
             }
         }
@@ -85,9 +90,35 @@ impl Writer {
         }
     }
 
-    fn new_line(&mut self) {} // in order to run tests, leave this function signature here, will implement it later otherwise file won't compile
+    fn new_line(&mut self) {
+        for row in 1..BUFFER_HEIGHT {  //iterating over all screen characters and move each character one row up
+            for col in 0..BUFFER_WIDTH {
+                let character = self.buffer.characters[row][col].read();
+                self.buffer.characters[row - 1][col].write(character);
+            }
+        }
+        self.clear_row(BUFFER_HEIGHT -1);
+        self.column_position = 0;
+    }
+
+    fn clear_row(&mut self, row: usize) { //this method clears a row by overwriting all of its characters with a space character
+        let blank = ScreenCharacter {
+            ascii_character: b' ',
+            colour_code: self.colour_code,
+        };
+        for col in 0..BUFFER_WIDTH {
+            self.buffer.characters[row][col].write(blank)
+        }
+    }
 }
 
+//introducing formatting macros
+impl fmt::Write for Writer {
+    fn write_str(&mut self, s: &str) -> fmt::Result {
+        self.write_string(s);
+        Ok(())
+    }
+}
 
 //let's see if it works, wowza.
 pub fn print_to_screen() {
@@ -101,9 +132,8 @@ pub fn print_to_screen() {
     writer.write_string("iggyOS ");
     writer.write_string("is a learning OS for my purposes only,");
     writer.write_string(" maybe there's a trojan horse in here.");
-
+    write!(writer, "Dummy math op {} + {} = {}", 67, 90, 67+90).expect("Don't want it to panic. In any case it won't since writes to the VGA buffer never fail");
 }
-
 
 
 

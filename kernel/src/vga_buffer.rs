@@ -48,12 +48,13 @@ struct ScreenCharacter {
 const BUFFER_WIDTH: usize = 80;
 const BUFFER_HEIGHT: usize = 25;
 
+//stores a reference to the VGA buffer
 #[repr(transparent)] //ensures same memory layout as its single field
 struct Buffer {
     characters: [[Volatile<ScreenCharacter>; BUFFER_WIDTH]; BUFFER_HEIGHT],
 }
 
-//writing to screen
+//writing to screen/modifying buffer characters
 pub struct Writer {
     column_position: usize,
     colour_code: ColourCode,
@@ -63,6 +64,7 @@ pub struct Writer {
 #[allow(unused_variables)]
 //printing(we'll use the Writer to modify the buffer's characters)
 impl Writer {
+    //writing a single ascii byte.
     pub fn write_byte(&mut self, byte: u8) {
         match byte {
             b'\n' => self.new_line(),
@@ -71,7 +73,7 @@ impl Writer {
                 let row = BUFFER_HEIGHT - 1;
                 let col = self.column_position;
                 let colour_code = self.colour_code;
-                self.buffer.characters[row][col].write( ScreenCharacter {  //guarantees the compiler will never optimize away this write
+                self.buffer.characters[row][col].write( ScreenCharacter {  //guarantees the compiler will never optimize away this write as it's marked as volatile.
                     ascii_character: byte,
                     colour_code,
                 });

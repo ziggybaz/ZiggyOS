@@ -1,6 +1,6 @@
 //I'll clean up all this comments after implementation, i hate them goes against the principles of keeping code clean.
 #![no_std] //disabling std lib.
-#![no_main] //overwriting the entry-point
+#![no_main] //overwriting the entry-point, as std_lib is disabled and we therefore don't have access to both 'Crt0' nor the rust runtime
 
 use core::panic::PanicInfo;
 

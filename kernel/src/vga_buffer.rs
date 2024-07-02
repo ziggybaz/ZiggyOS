@@ -1,8 +1,12 @@
 //vga_text buffer
-use volatile::Volatile; //allows you to manage aggressive Rust compiler optimizations, as we're only writing to buffer and never reading from it, the compiler doesn't know we're using VGA Buffer memory so ight decide that
-                        //these writes are unneccesary and omit them therefore we to avoid this we need to specify these writes as VOLATILE.
+use volatile::Volatile; //allows you to manage aggressive Rust compiler optimizations, as we're only writing to buffer and never reading from it, the compiler doesn't know we're using VGA Buffer memory so might decide that
+                        //these writes are unneccesary and omit them therefore to avoid this we need to specify these writes as VOLATILE.
+
 use core::fmt;  //introducing Rust's formatting macros
 use core::fmt::Write;
+use lazy_static::lazy_static; //statics unlike other variables that initialize at runtime initialize at compile time which Rust doesn't support yet so a work around this was found, to lazily initialize the static when accessed
+                              //for the first time, therefore the initialization happens at runtime.
+use spin::Mutex;//using spinlocks to allow interior mutability by locking the thread in a tight loop until the mutex is free again.
 
 //a. colour
 #[allow(dead_code)]
@@ -123,27 +127,31 @@ impl fmt::Write for Writer {
 }
 
 //let's see if it works, wowza.
-pub fn print_to_screen() {
-    let mut writer = Writer {
+//implementing a global writing interface.
+lazy_static! {
+    pub static ref WRITER: Mutex<Writer> =Mutex::new( Writer {
         column_position: 0,
-        colour_code: ColourCode::new(Colour::Green, Colour::Red),
-        buffer: unsafe {&mut *(0xb8000 as *mut Buffer) },
-    };
-
-    writer.write_byte(b'Z');
-    writer.write_string("iggyOS ");
-    writer.write_string("is a learning OS for my purposes only,");
-    writer.write_string(" maybe there's a trojan horse in here.");
-    write!(writer, "Dummy math op {} + {} = {}", 67, 90, 67+90).expect("Don't want it to panic. In any case it won't since writes to the VGA buffer never fail");
+        colour_code: ColourCode::new(Colour::Yellow, Colour::Black),
+        buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
+    });
 }
 
+//building out a 'println!' macro that will be available globally.
+#[macro_export]
+macro_rules! print {
+    ($($arg:tt)*) => ($crate::vga_buffer::_print(format_args!($($arg)*)));
+}
 
+#[macro_export]
+macro_rules! println {
+    () => ($crate::print!("\n"));
+    ($($arg:tt)*) => ($crate::print!("{}\n", format_args!($($arg)*)));
+}
 
-
-
-
-
-
+#[doc(hidden)]
+pub fn _print(args: fmt::Arguments) {
+    WRITER.lock().write_fmt(args).unwrap();
+}
 
 
 

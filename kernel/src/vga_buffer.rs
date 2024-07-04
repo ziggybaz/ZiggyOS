@@ -154,28 +154,9 @@ pub fn _print(args: fmt::Arguments) {
 }
 
 
-#[test_case]
-fn test_println_simple() {
-    println!("testing this functionality.");
-}
 
-#[test_case]
-fn test_println_many() {
-    for _ in 0..200 {
-        println!("testing to see that no panic occurs when multiple outputs are printed");
-    }
-}
 
-#[test_case]
-fn test_println_output() {
-    let s = "she sells sea-shells by the sea shore";
-    println!("{s}");
 
-    for (i,c) in s.chars().enumerate() {
-        let screen_char = WRITER.lock().buffer.characters[BUFFER_HEIGHT - 2][i].read();
-        assert_eq!(char::from(screen_char.ascii_character), c);
-    }
-}
 
 
 

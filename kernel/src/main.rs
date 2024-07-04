@@ -24,11 +24,7 @@ fn panic(info: &PanicInfo) -> ! {
 
 static OSNAME: &[u8] = b"Ziggy OS Loading";
 
-<<<<<<< HEAD
-#[no_mangle] //don't mangle the name of this function instead use 'C' calling convention
-=======
 #[no_mangle] //don't mangle the name of this function instead use 'C' naming convention. also this attribute tells the linker the name of the entry-point
->>>>>>> 840f667b38e9c47c592d73d68b9084ec3829e2f7
 pub extern "C" fn _start() -> ! { //system entry-point, surprised to learn main isn't it in most languages.(named _start by default, standard)
    
     println!("ZiggyOS Initializing. \nBuilt in: {}.", 2024);

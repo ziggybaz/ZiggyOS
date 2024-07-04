@@ -1,9 +1,9 @@
 //i'll clean up all this comments after implementation, i hate them goes against the principles of keeping code clean.
 #![no_std] //disabling std lib.
-#![no_main] //overwriting the entry-point
 #![feature(custom_test_frameworks)]
 #![test_runner(operating_system::test_runner)]
 #![reexport_test_harness_main = "test_main"]
+#![no_main] //overwriting the entry-point, as std_lib is disabled and we therefore don't have access to both 'Crt0' nor the rust runtime
 
 use operating_system::println;
 use core::panic::PanicInfo;
@@ -24,7 +24,11 @@ fn panic(info: &PanicInfo) -> ! {
 
 static OSNAME: &[u8] = b"Ziggy OS Loading";
 
+<<<<<<< HEAD
 #[no_mangle] //don't mangle the name of this function instead use 'C' calling convention
+=======
+#[no_mangle] //don't mangle the name of this function instead use 'C' naming convention. also this attribute tells the linker the name of the entry-point
+>>>>>>> 840f667b38e9c47c592d73d68b9084ec3829e2f7
 pub extern "C" fn _start() -> ! { //system entry-point, surprised to learn main isn't it in most languages.(named _start by default, standard)
    
     println!("ZiggyOS Initializing. \nBuilt in: {}.", 2024);

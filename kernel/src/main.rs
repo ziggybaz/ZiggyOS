@@ -5,8 +5,6 @@
 #![reexport_test_harness_main = "test_main"]
 #![no_main] //overwriting the entry-point, as std_lib is disabled and we therefore don't have access to both 'Crt0' nor the rust runtime
 
-//sorting some minor issue
-
 use operating_system::println;
 use core::panic::PanicInfo;
 

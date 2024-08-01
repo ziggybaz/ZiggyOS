@@ -1,0 +1,1 @@
+/home/ziggybaz/ZiggyOS/kernel/target/x86_64-ZiggyOS/debug/liboperating_system.rlib: /home/ziggybaz/ZiggyOS/kernel/src/lib.rs /home/ziggybaz/ZiggyOS/kernel/src/serial.rs /home/ziggybaz/ZiggyOS/kernel/src/vga_buffer.rs

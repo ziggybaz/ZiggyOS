@@ -1,0 +1,7 @@
+cargo:rerun-if-changed=/home/ziggybaz/ZiggyOS/kernel/Cargo.toml
+cargo:rustc-link-search=native=/home/ziggybaz/ZiggyOS/kernel/target/bootimage/bootloader/x86_64-bootloader/release/build/bootloader-fccb0509ecf5a46d/out
+cargo:rustc-link-lib=static=kernel_bin-operating_system
+cargo:rerun-if-env-changed=KERNEL
+cargo:rerun-if-env-changed=KERNEL_MANIFEST
+cargo:rerun-if-changed=/home/ziggybaz/ZiggyOS/kernel/target/x86_64-ZiggyOS/debug/operating_system
+cargo:rerun-if-changed=build.rs
